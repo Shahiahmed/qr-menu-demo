@@ -1,0 +1,3 @@
+# backend is its own git repo (github.com/Shahiahmed/qr-back) — don't track it
+# here as an accidental submodule.
+backend/
