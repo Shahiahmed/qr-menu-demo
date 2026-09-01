@@ -331,6 +331,16 @@ function menu(boot) {
                 for (const s of sections) {
                     if (s.getBoundingClientRect().top - offset <= 0) current = s.dataset.sub;
                 }
+                // Near the bottom the last section may never clear the offset (its
+                // top stays below the header), so pin the last tab once we've
+                // scrolled to the end. Lets us drop the tall spacer that used to
+                // force that room — no more blank gap under the last dish.
+                const atBottom =
+                    window.innerHeight + window.scrollY >=
+                    document.documentElement.scrollHeight - 4;
+                if (atBottom && sections.length) {
+                    current = sections[sections.length - 1].dataset.sub;
+                }
                 this.activeSub = current === null ? null : Number(current);
             };
             window.addEventListener('scroll', onScroll, { passive: true });

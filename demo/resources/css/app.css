@@ -298,6 +298,16 @@ html {
     scroll-snap-type: x mandatory;
     padding-bottom: 0.25rem;
 }
+/* Side gutters via edge-child margins, not container padding: some mobile
+   engines drop a scroll container's trailing inline padding, leaving the last
+   card glued to the screen edge. Margins on flex items always paint, so both
+   ends get a symmetric 1rem inset. */
+.promo-scroll > :first-child {
+    margin-left: 1rem;
+}
+.promo-scroll > :last-child {
+    margin-right: 1rem;
+}
 .promo-card {
     position: relative;
     flex: none;
@@ -347,6 +357,13 @@ html {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     padding-bottom: 0.25rem;
+}
+/* Symmetric side gutters — see .promo-scroll note above. */
+.rail > :first-child {
+    margin-left: 1rem;
+}
+.rail > :last-child {
+    margin-right: 1rem;
 }
 .rail-card {
     flex: none;

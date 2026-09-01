@@ -140,7 +140,7 @@
         {{-- ========== Promo banners (сторис) — hidden while searching ========== --}}
         @if ($promotions->isNotEmpty())
             <div x-show="!searching" class="mx-auto mt-5 max-w-[680px]">
-                <div x-drag-scroll class="promo-scroll no-scrollbar px-4">
+                <div x-drag-scroll class="promo-scroll no-scrollbar">
                     @foreach ($promotions as $p)
                         <div class="promo-card">
                             @if ($p->imageUrl())
@@ -175,7 +175,7 @@
                             <span x-show="locale === 'ru'">{{ $col->name_ru }}</span>
                             <span x-show="locale === 'kk'" x-cloak>{{ $col->name_kk ?: $col->name_ru }}</span>
                         </h2>
-                        <div x-drag-scroll class="rail no-scrollbar px-4">
+                        <div x-drag-scroll class="rail no-scrollbar">
                             @foreach ($col->dishes as $d)
                                 <a href="{{ route('menu.dish', $d->slug) }}" class="rail-card">
                                     <div class="rail-photo">
@@ -268,7 +268,7 @@
                      row is shown. Groups without subcategories emit nothing. --}}
                 @foreach ($groups as $g)
                     @if ($g->children->isNotEmpty())
-                        <div x-show="!searching && activeTop === {{ $g->id }}" x-cloak x-drag-scroll class="no-scrollbar mx-auto max-w-[680px] overflow-x-auto px-4 pb-2">
+                        <div x-show="!searching && activeTop === {{ $g->id }}" x-cloak x-drag-scroll class="no-scrollbar mx-auto max-w-[680px] overflow-x-auto border-t border-border/60 px-4 pb-2 pt-2">
                             <div class="flex gap-2">
                                 @foreach ($g->children as $sub)
                                     <button
@@ -289,16 +289,14 @@
         </div>
 
         {{-- ========== Menu ========== --}}
-        <main id="menu-top" class="mx-auto max-w-[680px] px-4 pb-44 pt-5">
+        <main id="menu-top" class="mx-auto max-w-[680px] px-4 pb-32 pt-5">
             @forelse ($groups as $g)
                 {{-- A whole top group is hidden unless it's the selected tab (or "Все",
-                     or an active search — where matches decide visibility). --}}
-                {{-- The tall min-height is only a scroll-spy helper: when a single
-                     tab is selected we need room below the shortest section so it
-                     can scroll under the sticky header and light its tab. In the
-                     "Все" view it just leaves a big blank tail, so drop it there. --}}
+                     or an active search — where matches decide visibility). No filler
+                     height: scroll-spy pins the last tab at the bottom of the page
+                     (see setupScrollSpy), so a short section no longer needs blank
+                     room below it to light its tab. --}}
                 <div x-show="searching || activeTop === 0 || activeTop === {{ $g->id }}"
-                     :class="activeTop === {{ $g->id }} && 'min-h-[70vh]'"
                      class="mb-2">
                     @if ($g->children->isNotEmpty())
                         {{-- Group super-heading — the subcategories carry the dishes. --}}
