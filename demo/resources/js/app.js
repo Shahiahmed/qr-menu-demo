@@ -339,6 +339,94 @@ function menu(boot) {
     };
 }
 
+/**
+ * `x-drag-scroll` — makes a horizontal overflow strip draggable with a mouse and
+ * scrollable with the wheel. Touch/trackpad already pan these natively (and the
+ * scrollbar is hidden by `.no-scrollbar`), so on a laptop the rails felt stuck;
+ * this restores grab-drag + wheel→horizontal for a plain mouse.
+ *
+ * Mouse only: touch/pen keep native scrolling (we'd fight it otherwise). A drag
+ * past a small threshold swallows the trailing click so rail cards (which are
+ * <a> links) don't navigate when the guest was only dragging.
+ */
+Alpine.directive('drag-scroll', (el) => {
+    let startX = 0;
+    let startLeft = 0;
+    let dragging = false;
+    let moved = false;
+    let pointerId = null;
+
+    el.style.cursor = 'grab';
+
+    el.addEventListener('pointerdown', (e) => {
+        if (e.pointerType !== 'mouse' || e.button !== 0) return;
+        dragging = true;
+        moved = false;
+        startX = e.clientX;
+        startLeft = el.scrollLeft;
+        pointerId = e.pointerId;
+    });
+
+    el.addEventListener('pointermove', (e) => {
+        if (!dragging) return;
+        const dx = e.clientX - startX;
+        // Only claim the gesture once it's clearly a drag — keeps taps clickable.
+        if (!moved && Math.abs(dx) > 4) {
+            moved = true;
+            el.style.cursor = 'grabbing';
+            try {
+                el.setPointerCapture(pointerId);
+            } catch {
+                /* capture unsupported — drag still works while inside el */
+            }
+        }
+        if (moved) el.scrollLeft = startLeft - dx;
+    });
+
+    const end = () => {
+        if (!dragging) return;
+        dragging = false;
+        el.style.cursor = 'grab';
+        if (pointerId !== null) {
+            try {
+                el.releasePointerCapture(pointerId);
+            } catch {
+                /* nothing captured */
+            }
+            pointerId = null;
+        }
+    };
+    el.addEventListener('pointerup', end);
+    el.addEventListener('pointercancel', end);
+
+    // Capture phase so we cancel the click before it reaches the <a> card.
+    el.addEventListener(
+        'click',
+        (e) => {
+            if (moved) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            moved = false;
+        },
+        true,
+    );
+
+    // Vertical wheel over the strip scrolls it sideways (a mouse wheel has no
+    // horizontal axis). Only when there's actually somewhere to scroll.
+    el.addEventListener(
+        'wheel',
+        (e) => {
+            if (el.scrollWidth <= el.clientWidth + 1) return;
+            const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+            if (delta === 0) return;
+            e.preventDefault();
+            el.scrollLeft += delta;
+        },
+        { passive: false },
+    );
+});
+
 window.Alpine = Alpine;
 Alpine.data('menu', menu);
 Alpine.start();

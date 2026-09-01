@@ -140,7 +140,7 @@
         {{-- ========== Promo banners (сторис) — hidden while searching ========== --}}
         @if ($promotions->isNotEmpty())
             <div x-show="!searching" class="mx-auto mt-5 max-w-[680px]">
-                <div class="promo-scroll no-scrollbar px-4">
+                <div x-drag-scroll class="promo-scroll no-scrollbar px-4">
                     @foreach ($promotions as $p)
                         <div class="promo-card">
                             @if ($p->imageUrl())
@@ -175,7 +175,7 @@
                             <span x-show="locale === 'ru'">{{ $col->name_ru }}</span>
                             <span x-show="locale === 'kk'" x-cloak>{{ $col->name_kk ?: $col->name_ru }}</span>
                         </h2>
-                        <div class="rail no-scrollbar px-4">
+                        <div x-drag-scroll class="rail no-scrollbar px-4">
                             @foreach ($col->dishes as $d)
                                 <a href="{{ route('menu.dish', $d->slug) }}" class="rail-card">
                                     <div class="rail-photo">
@@ -241,7 +241,7 @@
             @if ($groups->isNotEmpty())
                 {{-- Top-level category tabs. "Все" shows every group; picking one
                      filters the menu to that group and reveals its subcategory chips. --}}
-                <div x-show="!searching" class="no-scrollbar mx-auto max-w-[680px] overflow-x-auto px-4 pb-2">
+                <div x-show="!searching" x-drag-scroll class="no-scrollbar mx-auto max-w-[680px] overflow-x-auto px-4 pb-2">
                     <div class="flex gap-2">
                         <button
                             type="button"
@@ -268,7 +268,7 @@
                      row is shown. Groups without subcategories emit nothing. --}}
                 @foreach ($groups as $g)
                     @if ($g->children->isNotEmpty())
-                        <div x-show="!searching && activeTop === {{ $g->id }}" x-cloak class="no-scrollbar mx-auto max-w-[680px] overflow-x-auto px-4 pb-2">
+                        <div x-show="!searching && activeTop === {{ $g->id }}" x-cloak x-drag-scroll class="no-scrollbar mx-auto max-w-[680px] overflow-x-auto px-4 pb-2">
                             <div class="flex gap-2">
                                 @foreach ($g->children as $sub)
                                     <button
