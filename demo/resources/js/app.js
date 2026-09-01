@@ -293,18 +293,40 @@ function menu(boot) {
             const header = document.getElementById('menu-header');
             return header ? header.offsetHeight : 0;
         },
-        // Pick a top-level category (or 0 = "Все"). This filters the menu, so we
-        // jump back to the top of the list rather than deep-scroll.
+        // Height of the fixed bottom dock (nav + a little breathing room) we must
+        // keep clear when bottom-aligning a short group.
+        dockOffset: 72,
+        // Pick a top-level category (or 0 = "Все"). Picking a category also hides
+        // the browse blocks (about/promos/collections) above the list, so the only
+        // thing above the sticky header is the cover hero.
+        //
+        // A tall group is pinned: its heading sits just under the sticky header.
+        // A SHORT group is bottom-aligned instead — pinning it would strand the few
+        // dishes above a large empty band over the nav; bottom-aligning drops that
+        // band and lets the cover hero fill the top, so the screen reads as a clean
+        // short page rather than a void. min() picks whichever scrolls less.
         selectTop(id) {
             this.activeTop = id;
             this.activeSub = null;
-            const el = document.getElementById('menu-top');
-            if (!el) return;
-            const top = el.getBoundingClientRect().top + window.scrollY - this.headerOffset() - 8;
-            // Let the x-show filter settle before measuring/scrolling.
             this.scrollLock = true;
-            requestAnimationFrame(() => {
-                window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
+            // $nextTick so the x-show filter (and the now-hidden browse blocks) are
+            // applied before we measure — getBoundingClientRect must see final layout.
+            this.$nextTick(() => {
+                const el =
+                    id === 0
+                        ? document.getElementById('menu-top')
+                        : document.querySelector(`[data-group="${id}"]`);
+                if (!el) {
+                    this.scrollLock = false;
+                    return;
+                }
+                const rect = el.getBoundingClientRect();
+                const top = rect.top + window.scrollY;
+                const bottom = rect.bottom + window.scrollY;
+                const pinTop = top - this.headerOffset() - 8;
+                const bottomAlign = bottom + this.dockOffset - window.innerHeight;
+                const target = Math.max(0, Math.min(pinTop, bottomAlign));
+                window.scrollTo({ top: target, behavior: 'smooth' });
                 setTimeout(() => (this.scrollLock = false), 650);
             });
         },

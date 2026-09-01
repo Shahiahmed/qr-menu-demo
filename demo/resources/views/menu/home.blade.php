@@ -127,9 +127,9 @@
             @endif
         </header>
 
-        {{-- About --}}
+        {{-- About — browse content: only in the unfiltered "Все" view. --}}
         @if ($venue->description_ru || $venue->description_kk)
-            <div class="mx-auto mt-5 max-w-[680px] px-4">
+            <div x-show="!searching && activeTop === 0" class="mx-auto mt-5 max-w-[680px] px-4">
                 <div class="rounded-2xl bg-white p-4 text-sm leading-relaxed text-muted shadow-sm ring-1 ring-border">
                     <p x-show="locale === 'ru'">{{ $venue->description_ru }}</p>
                     <p x-show="locale === 'kk'" x-cloak>{{ $venue->description_kk ?: $venue->description_ru }}</p>
@@ -139,7 +139,7 @@
 
         {{-- ========== Promo banners (сторис) — hidden while searching ========== --}}
         @if ($promotions->isNotEmpty())
-            <div x-show="!searching" class="mx-auto mt-5 max-w-[680px]">
+            <div x-show="!searching && activeTop === 0" class="mx-auto mt-5 max-w-[680px]">
                 <div x-drag-scroll class="promo-scroll no-scrollbar">
                     @foreach ($promotions as $p)
                         <div class="promo-card">
@@ -168,7 +168,7 @@
 
         {{-- ========== Collections (подборки) — horizontal rails, hidden while searching ========== --}}
         @if ($collections->isNotEmpty())
-            <div x-show="!searching" class="mx-auto mt-6 max-w-[680px] space-y-6">
+            <div x-show="!searching && activeTop === 0" class="mx-auto mt-6 max-w-[680px] space-y-6">
                 @foreach ($collections as $col)
                     <section>
                         <h2 class="mb-3 px-4 text-lg font-bold text-foreground">
@@ -300,6 +300,7 @@
                      (see setupScrollSpy), so a short section no longer needs blank
                      room below it to light its tab. --}}
                 <div x-show="searching || activeTop === 0 || activeTop === {{ $g->id }}"
+                     data-group="{{ $g->id }}"
                      class="mb-2">
                     @if ($g->children->isNotEmpty())
                         {{-- Group super-heading — the subcategories carry the dishes. --}}
