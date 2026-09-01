@@ -1,0 +1,384 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../views';
+
+/*
+ * Design tokens ported from the main project (front/src/app/globals.css). The
+ * accent family is overridden per-venue at runtime by inline CSS variables the
+ * guest page sets from the chosen theme, so `bg-accent` / `text-accent` recolour
+ * without a rebuild.
+ */
+:root {
+    --background: #ffffff;
+    --foreground: #17140f;
+    --accent: #ff6a4d;
+    --accent-hover: #ee5233;
+    --accent-soft: #fff1ec;
+    --accent-tint: #ffe3d9;
+    --gold: #f0a83c;
+    --surface: #faf7f4;
+    --surface-2: #f4efea;
+    --muted: #736c66;
+    --muted-soft: #8a837c;
+    --border: #f0ece8;
+    --border-strong: #e7e2dd;
+    --ink: #141210;
+    --ink-soft: #241f1a;
+    --card: #ffffff;
+}
+
+/*
+ * Dark mode — the guest toggles it per device. We flip only the surface/text
+ * tokens on <html data-mode="dark">; the accent family stays whatever theme the
+ * guest picked (accent is set inline on the menu root, independent of light/dark).
+ * A few components hardcode `bg-white` in markup, so we retarget those to --card
+ * here. These rules sit outside @layer, so they win over Tailwind's utilities.
+ */
+:root[data-mode='dark'] {
+    --background: #201c17;
+    --foreground: #f4f0ea;
+    --surface: #262119;
+    --surface-2: #322b22;
+    --muted: #b3aaa0;
+    --muted-soft: #968d83;
+    --border: #3a332a;
+    --border-strong: #4a4239;
+    /* Cards sit a step lighter than the page so they read as elevated, not flat. */
+    --card: #302a21;
+}
+
+[data-mode='dark'] .bg-white {
+    background-color: var(--card);
+}
+[data-mode='dark'] .bg-white\/95 {
+    background-color: color-mix(in oklab, var(--card) 95%, transparent);
+}
+
+@theme inline {
+    /* Extra-small breakpoint for tight in-row controls (e.g. dish status pill). */
+    --breakpoint-xs: 400px;
+
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-accent: var(--accent);
+    --color-accent-hover: var(--accent-hover);
+    --color-accent-soft: var(--accent-soft);
+    --color-accent-tint: var(--accent-tint);
+    --color-gold: var(--gold);
+    --color-surface: var(--surface);
+    --color-surface-2: var(--surface-2);
+    --color-muted: var(--muted);
+    --color-muted-soft: var(--muted-soft);
+    --color-border: var(--border);
+    --color-border-strong: var(--border-strong);
+    --color-ink: var(--ink);
+    --color-ink-soft: var(--ink-soft);
+
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    letter-spacing: -0.011em;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 88px;
+}
+
+::selection {
+    background: #ffd9cf;
+    color: #17140f;
+}
+
+/* ---------- Motion ---------- */
+
+@keyframes pop-in {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes sheet-up {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.animate-pop-in {
+    animation: pop-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-sheet-up {
+    animation: sheet-up 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    .animate-pop-in,
+    .animate-sheet-up {
+        animation: none;
+    }
+}
+
+/* ---------- Menu-photo placeholders ---------- */
+
+.placeholder-stripes {
+    background: repeating-linear-gradient(135deg, #ffe7df, #ffe7df 12px, #ffddd2 12px, #ffddd2 24px);
+}
+
+.placeholder-stripes-sm {
+    background: repeating-linear-gradient(135deg, #fff1ec, #fff1ec 8px, #ffe4da 8px, #ffe4da 16px);
+}
+
+/* Hide the horizontal scrollbar on the sticky category tab strip. */
+.no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* ---------- Menu layouts ----------
+ * One dish markup, three arrangements, switched instantly by the guest through
+ * a `data-layout` attribute on the section list — no rebuild, no DOM swap (the
+ * dishes stay in the document once, which keeps them crawlable). Ported from the
+ * React DishCard variants: classic (photo-left rows), grid (photo-top 2-col),
+ * compact (dense list with dividers). */
+
+.dish-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.dish {
+    display: flex;
+    gap: 0.875rem;
+    align-items: stretch;
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    background: var(--card);
+    padding: 0.75rem;
+    text-align: left;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.dish:hover {
+    border-color: var(--border-strong);
+    box-shadow: 0 6px 20px -12px rgba(20, 18, 16, 0.25);
+}
+
+.dish-photo {
+    position: relative;
+    flex: none;
+    width: 92px;
+    height: 92px;
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+.dish-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.dish-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+}
+.dish-name {
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--foreground);
+}
+.dish-desc {
+    margin-top: 0.25rem;
+    font-size: 0.8125rem;
+    line-height: 1.35;
+    color: var(--muted);
+}
+.dish-foot {
+    margin-top: auto;
+    padding-top: 0.625rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+.dish-price {
+    font-weight: 700;
+    color: var(--foreground);
+    white-space: nowrap;
+}
+
+/* Sold-out dishes stay visible but dimmed and un-orderable. */
+.dish.is-sold-out {
+    opacity: 0.55;
+}
+
+/* --- grid: two columns, photo on top --- */
+[data-layout='grid'] .dish-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+[data-layout='grid'] .dish {
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+}
+[data-layout='grid'] .dish-photo {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    border-radius: 0;
+}
+[data-layout='grid'] .dish-body {
+    padding: 0.75rem;
+}
+
+/* --- compact: dense list, small thumbs, hairline dividers --- */
+[data-layout='compact'] .dish-list {
+    gap: 0;
+}
+[data-layout='compact'] .dish {
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid var(--border);
+    background: transparent;
+    padding: 0.75rem 0.25rem;
+    box-shadow: none;
+}
+[data-layout='compact'] .dish:hover {
+    box-shadow: none;
+}
+[data-layout='compact'] .dish-photo {
+    width: 56px;
+    height: 56px;
+    border-radius: 0.5rem;
+}
+[data-layout='compact'] .dish-desc {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+[data-layout='compact'] .dish-foot {
+    padding-top: 0.375rem;
+}
+
+/* ---------- Promo banners (сторис) ---------- */
+
+.promo-scroll {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 0.25rem;
+}
+.promo-card {
+    position: relative;
+    flex: none;
+    width: min(78vw, 320px);
+    aspect-ratio: 16 / 9;
+    border-radius: 1rem;
+    overflow: hidden;
+    scroll-snap-align: start;
+    background: var(--surface-2);
+}
+.promo-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.promo-fallback {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+}
+.promo-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0.875rem 1rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.05) 62%, transparent);
+    color: #fff;
+}
+.promo-title {
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.2;
+}
+.promo-sub {
+    margin-top: 0.15rem;
+    font-size: 0.8125rem;
+    opacity: 0.92;
+}
+
+/* ---------- Collection rails ---------- */
+
+.rail {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 0.25rem;
+}
+.rail-card {
+    flex: none;
+    width: 150px;
+    scroll-snap-align: start;
+}
+.rail-photo {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    border-radius: 0.875rem;
+    overflow: hidden;
+    background: var(--surface-2);
+}
+.rail-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.rail-name {
+    margin-top: 0.4rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--foreground);
+    line-height: 1.25;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.rail-price {
+    margin-top: 0.1rem;
+    font-size: 0.8125rem;
+    color: var(--muted);
+}
