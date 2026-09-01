@@ -275,8 +275,11 @@
                                         type="button"
                                         x-on:click="goToSub({{ $sub->id }})"
                                         :class="activeSub === {{ $sub->id }} ? 'bg-accent-soft text-accent ring-1 ring-accent' : 'bg-white text-muted ring-1 ring-border'"
-                                        class="whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium transition"
+                                        class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium transition"
                                     >
+                                        @if ($sub->icon)
+                                            @include('menu.partials.cat-icon', ['icon' => $sub->icon])
+                                        @endif
                                         <span x-show="locale === 'ru'">{{ $sub->name_ru }}</span>
                                         <span x-show="locale === 'kk'" x-cloak>{{ $sub->name_kk ?: $sub->name_ru }}</span>
                                     </button>

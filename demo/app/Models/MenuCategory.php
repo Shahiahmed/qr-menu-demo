@@ -12,6 +12,7 @@ class MenuCategory extends Model
         'parent_id',
         'name_ru',
         'name_kk',
+        'icon',
         'sort',
         'is_visible',
     ];

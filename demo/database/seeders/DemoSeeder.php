@@ -72,6 +72,7 @@ class DemoSeeder extends Seeder
             ['name_ru' => $cat['name_ru']],
             [
                 'name_kk' => $cat['name_kk'],
+                'icon' => $cat['icon'] ?? null,
                 'parent_id' => $parentId,
                 'sort' => $sort,
                 'is_visible' => true,
@@ -179,7 +180,7 @@ class DemoSeeder extends Seeder
                 'name_ru' => 'Кухня', 'name_kk' => 'Асхана',
                 'children' => [
                     [
-                        'name_ru' => 'Салаты', 'name_kk' => 'Салаттар',
+                        'name_ru' => 'Салаты', 'name_kk' => 'Салаттар', 'icon' => 'salad',
                         'dishes' => [
                             ['slug' => 'cezar', 'name_ru' => 'Цезарь с курицей', 'name_kk' => 'Тауық етті Цезарь', 'description_ru' => 'Романо, пармезан, сухарики, соус', 'description_kk' => 'Романо, пармезан, кептірілген нан, тұздық', 'price' => 219000],
                             ['slug' => 'grecheskiy', 'name_ru' => 'Греческий', 'name_kk' => 'Грек салаты', 'description_ru' => 'Овощи, фета, оливки, оливковое масло', 'description_kk' => 'Көкөніс, фета, зәйтүн, зәйтүн майы', 'price' => 189000],
@@ -187,7 +188,7 @@ class DemoSeeder extends Seeder
                         ],
                     ],
                     [
-                        'name_ru' => 'Национальная кухня', 'name_kk' => 'Ұлттық асхана',
+                        'name_ru' => 'Национальная кухня', 'name_kk' => 'Ұлттық асхана', 'icon' => 'meat',
                         'dishes' => [
                             ['slug' => 'beshbarmak', 'name_ru' => 'Бешбармак', 'name_kk' => 'Бешбармақ', 'description_ru' => 'Конина, тесто, лук, сорпа', 'description_kk' => 'Жылқы еті, қамыр, пияз, сорпа', 'price' => 390000],
                             ['slug' => 'manty', 'name_ru' => 'Манты (5 шт)', 'name_kk' => 'Мәнті (5 дана)', 'description_ru' => 'С мясом и тыквой, на пару', 'description_kk' => 'Ет пен асқабақпен, буға пісірілген', 'price' => 240000],
@@ -195,7 +196,7 @@ class DemoSeeder extends Seeder
                         ],
                     ],
                     [
-                        'name_ru' => 'Горячее', 'name_kk' => 'Ыстық тағамдар',
+                        'name_ru' => 'Горячее', 'name_kk' => 'Ыстық тағамдар', 'icon' => 'flame',
                         'dishes' => [
                             ['slug' => 'dorado', 'name_ru' => 'Дорадо на гриле', 'name_kk' => 'Грильдегі дорадо', 'description_ru' => 'Целая рыба, лимон, травы', 'description_kk' => 'Тұтас балық, лимон, шөптер', 'price' => 450000, 'is_available' => false],
                             ['slug' => 'steyk', 'name_ru' => 'Стейк рибай', 'name_kk' => 'Рибай стейк', 'description_ru' => 'Мраморная говядина, соус на выбор', 'description_kk' => 'Мәрмәр сиыр еті, таңдау бойынша тұздық', 'price' => 690000],

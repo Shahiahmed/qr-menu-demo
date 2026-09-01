@@ -39,6 +39,19 @@ class MenuCategoryForm
                     ->maxLength(255)
                     ->helperText('Можно оставить пустым — покажем русское.'),
 
+                // Optional icon shown on the guest subcategory chips. Emoji in the
+                // labels are only a dropdown cue — the rendered glyph is the inline
+                // SVG in menu/partials/cat-icon.blade.php.
+                Select::make('icon')
+                    ->label('Значок')
+                    ->helperText('Показывается у подкатегорий рядом с названием. Пусто — без значка.')
+                    ->native(false)
+                    ->searchable()
+                    ->placeholder('— без значка —')
+                    ->options(collect(config('menu.category_icons'))
+                        ->map(fn (array $i) => $i['emoji'].'  '.$i['ru'])
+                        ->all()),
+
                 TextInput::make('sort')
                     ->label('Порядок')
                     ->numeric()

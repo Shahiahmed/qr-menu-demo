@@ -31,4 +31,37 @@ return [
         'grid'    => ['ru' => 'Две колонки, фото сверху', 'kk' => 'Екі баған, фотосы жоғарыда'],
         'compact' => ['ru' => 'Плотный список',           'kk' => 'Ықшам тізім'],
     ],
+
+    // Category icons the owner can attach to a subcategory in the admin panel.
+    // key => [ru/kk admin label, emoji preview shown in the Select]. The actual
+    // glyph is an inline SVG rendered by resources/views/menu/partials/cat-icon.blade.php
+    // (keys must match its @switch). Emoji is only a cue in the dropdown, not the
+    // rendered icon. Keep this list and the partial in sync.
+    'category_icons' => [
+        'utensils'  => ['ru' => 'Приборы / блюдо', 'kk' => 'Ас құралдары',  'emoji' => '🍴'],
+        'salad'     => ['ru' => 'Салат',           'kk' => 'Салат',         'emoji' => '🥗'],
+        'soup'      => ['ru' => 'Суп / горячее',   'kk' => 'Сорпа',         'emoji' => '🍜'],
+        'meat'      => ['ru' => 'Мясо',            'kk' => 'Ет',            'emoji' => '🍖'],
+        'fish'      => ['ru' => 'Рыба',            'kk' => 'Балық',         'emoji' => '🐟'],
+        'pizza'     => ['ru' => 'Пицца',           'kk' => 'Пицца',         'emoji' => '🍕'],
+        'bread'     => ['ru' => 'Выпечка / хлеб',  'kk' => 'Нан',           'emoji' => '🍞'],
+        'grain'     => ['ru' => 'Злаковые / гарнир', 'kk' => 'Дәнді',       'emoji' => '🌾'],
+        'cheese'    => ['ru' => 'Сыр / закуски',   'kk' => 'Ірімшік',       'emoji' => '🧀'],
+        'cake'      => ['ru' => 'Десерты',         'kk' => 'Десерттер',     'emoji' => '🍰'],
+        'icecream'  => ['ru' => 'Мороженое',       'kk' => 'Балмұздақ',     'emoji' => '🍦'],
+        'fruit'     => ['ru' => 'Фрукты',          'kk' => 'Жеміс',         'emoji' => '🍎'],
+        'sauce'     => ['ru' => 'Соусы',           'kk' => 'Тұздықтар',     'emoji' => '🥫'],
+        'flame'     => ['ru' => 'Гриль / острое',  'kk' => 'Гриль',         'emoji' => '🔥'],
+        'leaf'      => ['ru' => 'Веган / зелень',  'kk' => 'Вегетариандық', 'emoji' => '🌿'],
+        'coffee'    => ['ru' => 'Кофе',            'kk' => 'Кофе',          'emoji' => '☕'],
+        'tea'       => ['ru' => 'Чай',             'kk' => 'Шай',           'emoji' => '🍵'],
+        'water'     => ['ru' => 'Вода',            'kk' => 'Су',            'emoji' => '💧'],
+        'juice'     => ['ru' => 'Соки / лимонады', 'kk' => 'Шырын',         'emoji' => '🧃'],
+        'wine'      => ['ru' => 'Вино',            'kk' => 'Шарап',         'emoji' => '🍷'],
+        'beer'      => ['ru' => 'Пиво',            'kk' => 'Сыра',          'emoji' => '🍺'],
+        'cocktail'  => ['ru' => 'Коктейли',        'kk' => 'Коктейльдер',   'emoji' => '🍸'],
+        'bottle'    => ['ru' => 'Крепкий алкоголь', 'kk' => 'Спирттік',     'emoji' => '🍶'],
+        'milk'      => ['ru' => 'Молочное',        'kk' => 'Сүт өнімдері',  'emoji' => '🥛'],
+        'cigarette' => ['ru' => 'Сигареты',        'kk' => 'Темекі',        'emoji' => '🚬'],
+    ],
 ];
