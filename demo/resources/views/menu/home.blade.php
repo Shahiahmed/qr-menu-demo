@@ -47,11 +47,8 @@
 
 @extends('layouts.guest')
 
-@section('title', $venue->seo_title_ru ?: $venue->name)
-@section('description', \Illuminate\Support\Str::limit(strip_tags($venue->seo_description_ru ?: ($venue->description_ru ?? '')), 160))
-@if ($venue->coverUrl())
-    @section('og_image', $venue->coverUrl())
-@endif
+{{-- Home uses the layout's SEO defaults (venue->seoTitle/seoDescription/
+     seoKeywords/ogImageUrl), all editable in the panel. No overrides needed. --}}
 
 @section('body')
     <div

@@ -141,12 +141,47 @@ class VenueSettings extends Page implements HasForms
 
                     Tab::make('SEO')->schema([
                         Section::make('Русский')->schema([
-                            TextInput::make('seo_title_ru')->label('Title (рус)')->maxLength(255),
-                            Textarea::make('seo_description_ru')->label('Description (рус)')->rows(2),
+                            TextInput::make('seo_title_ru')
+                                ->label('Title (рус)')
+                                ->helperText('Заголовок вкладки и в поиске. Пусто — берётся название заведения. До ~60 символов.')
+                                ->maxLength(255),
+                            Textarea::make('seo_description_ru')
+                                ->label('Description (рус)')
+                                ->helperText('Текст под ссылкой в поиске и в превью при отправке ссылки. Пусто — берётся описание заведения. До ~160 символов.')
+                                ->rows(2),
+                            TextInput::make('seo_keywords_ru')
+                                ->label('Ключевые слова (рус)')
+                                ->helperText('Через запятую: меню, ресторан Алматы, казахская кухня…')
+                                ->maxLength(255),
                         ]),
                         Section::make('Қазақша')->schema([
-                            TextInput::make('seo_title_kk')->label('Title (каз)')->maxLength(255),
-                            Textarea::make('seo_description_kk')->label('Description (каз)')->rows(2),
+                            TextInput::make('seo_title_kk')
+                                ->label('Title (каз)')
+                                ->helperText('Пусто — берётся русский Title или название заведения.')
+                                ->maxLength(255),
+                            Textarea::make('seo_description_kk')
+                                ->label('Description (каз)')
+                                ->helperText('Пусто — берётся русское описание.')
+                                ->rows(2),
+                            TextInput::make('seo_keywords_kk')
+                                ->label('Ключевые слова (каз)')
+                                ->helperText('Через запятую.')
+                                ->maxLength(255),
+                        ]),
+                        Section::make('Картинка для соцсетей (OG)')->schema([
+                            // Downscaled + re-encoded to WebP like every other upload.
+                            // ~1200px long edge suits the 1.91:1 social-share card.
+                            FileUpload::make('seo_og_path')
+                                ->label('OG-изображение')
+                                ->helperText('Показывается при отправке ссылки в WhatsApp, Telegram, соцсети. Рекомендуется 1200×630. Пусто — используется обложка меню.')
+                                ->image()
+                                ->imageEditor()
+                                ->imageCropAspectRatio('1.91:1')
+                                ->disk('public')
+                                ->maxSize(8192)
+                                ->saveUploadedFileUsing(fn (TemporaryUploadedFile $file) => ImageOptimizer::store(
+                                    $file, 'venue', ImageOptimizer::MODE_CONTAIN, 1200, 82,
+                                )),
                         ]),
                     ]),
                 ])->columnSpanFull(),

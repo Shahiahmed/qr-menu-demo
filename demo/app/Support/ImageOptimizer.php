@@ -37,7 +37,22 @@ class ImageOptimizer
         int $maxEdge = 1600,
         int $quality = 82,
     ): string {
-        $binary = self::encode($file->get(), $mode, $maxEdge, $quality);
+        return self::storeBinary($file->get(), $directory, $mode, $maxEdge, $quality);
+    }
+
+    /**
+     * Same pipeline as store() but starting from raw image bytes already in
+     * memory rather than a Livewire upload — used by the demo photo seeder,
+     * which pulls stock images over HTTP.
+     */
+    public static function storeBinary(
+        string $bytes,
+        string $directory,
+        string $mode = self::MODE_CONTAIN,
+        int $maxEdge = 1600,
+        int $quality = 82,
+    ): string {
+        $binary = self::encode($bytes, $mode, $maxEdge, $quality);
 
         $path = trim($directory, '/').'/'.Str::random(16).'.webp';
         Storage::disk(self::DISK)->put($path, $binary);

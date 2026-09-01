@@ -42,6 +42,9 @@ class VenueSetting extends Model
         'seo_title_kk',
         'seo_description_ru',
         'seo_description_kk',
+        'seo_keywords_ru',
+        'seo_keywords_kk',
+        'seo_og_path',
     ];
 
     protected function casts(): array
@@ -75,5 +78,53 @@ class VenueSetting extends Model
     public function logoUrl(): ?string
     {
         return $this->logo_path ? Storage::disk('public')->url($this->logo_path) : null;
+    }
+
+    /**
+     * SEO/OG values, resolved for the venue's default locale. The crawler sees
+     * one language (the page's <html lang> is the default locale), so meta tags
+     * follow it — falling back to Russian, then to the plain name/description,
+     * so a tag is never empty. These feed the guest layout's <head>.
+     */
+    private function seoLocale(): string
+    {
+        return $this->default_locale === 'kk' ? 'kk' : 'ru';
+    }
+
+    public function seoTitle(): string
+    {
+        $loc = $this->seoLocale();
+
+        return $this->{"seo_title_{$loc}"} ?: ($this->seo_title_ru ?: $this->name);
+    }
+
+    public function seoDescription(): string
+    {
+        $loc = $this->seoLocale();
+        $value = $this->{"seo_description_{$loc}"}
+            ?: ($this->seo_description_ru ?: $this->description_ru);
+
+        return \Illuminate\Support\Str::limit(strip_tags((string) $value), 160);
+    }
+
+    public function seoKeywords(): ?string
+    {
+        $loc = $this->seoLocale();
+
+        return $this->{"seo_keywords_{$loc}"} ?: ($this->seo_keywords_ru ?: null);
+    }
+
+    /**
+     * The social-share image: the owner's uploaded OG image if set, otherwise
+     * the cover (which itself falls back to the default photo), so a share card
+     * always has an image.
+     */
+    public function ogImageUrl(): ?string
+    {
+        if ($this->seo_og_path) {
+            return Storage::disk('public')->url($this->seo_og_path);
+        }
+
+        return $this->coverUrl();
     }
 }
