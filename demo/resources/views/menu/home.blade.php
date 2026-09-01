@@ -293,7 +293,13 @@
             @forelse ($groups as $g)
                 {{-- A whole top group is hidden unless it's the selected tab (or "Все",
                      or an active search — where matches decide visibility). --}}
-                <div x-show="searching || activeTop === 0 || activeTop === {{ $g->id }}" class="mb-2 last:min-h-[70vh]">
+                {{-- The tall min-height is only a scroll-spy helper: when a single
+                     tab is selected we need room below the shortest section so it
+                     can scroll under the sticky header and light its tab. In the
+                     "Все" view it just leaves a big blank tail, so drop it there. --}}
+                <div x-show="searching || activeTop === 0 || activeTop === {{ $g->id }}"
+                     :class="activeTop === {{ $g->id }} && 'min-h-[70vh]'"
+                     class="mb-2">
                     @if ($g->children->isNotEmpty())
                         {{-- Group super-heading — the subcategories carry the dishes. --}}
                         <h2 class="mb-4 mt-2 text-xl font-bold text-foreground">
